@@ -1,5 +1,4 @@
 import { Injectable, ConflictException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 
 import { AppointmentAggregate } from '../../domain/appointment.aggregate';
@@ -8,16 +7,23 @@ import { AppointmentStatus } from '../../domain/appointment-status.enum';
 import { AppointmentRepository } from '../../application/ports/appointment.repository';
 import { AvailabilityCheckerPort } from '../../application/ports/availability-checker.port';
 
-import { AppointmentOrmEntity } from './appointment.orm-entity';
+import { AppointmentOrmEntity } from './appointment.entity';
 import { AppointmentMapper } from './appointment.mapper';
+import { DataSource } from 'typeorm';
 
 @Injectable()
-export class TypeOrmAppointmentRepository
-    implements AppointmentRepository, AvailabilityCheckerPort {
+export class TypeOrmAppointmentRepository implements AppointmentRepository, AvailabilityCheckerPort {
+
+    private readonly repository: Repository<AppointmentOrmEntity>;
+
     constructor(
-        @InjectRepository(AppointmentOrmEntity)
-        private readonly repository: Repository<AppointmentOrmEntity>,
-    ) { }
+    private readonly dataSource: DataSource,
+    ) {
+        this.repository =
+        this.dataSource.getRepository(
+            AppointmentOrmEntity,
+        );
+    }
 
     async save(appointment: AppointmentAggregate): Promise<void> {
         const entity = AppointmentMapper.toOrm(appointment);

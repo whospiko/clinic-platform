@@ -1,11 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { TypeOrmModule } from '@nestjs/typeorm';
-
 import { AppointmentController } from './presentation/appointment.controller';
-
-import { AppointmentOrmEntity } from './infrastructure/persistence/appointment.orm-entity';
-import { AppointmentStatusHistoryOrmEntity } from './infrastructure/persistence/appointment-status-history.orm-entity';
 import { TypeOrmAppointmentRepository } from './infrastructure/persistence/typeorm-appointment.repository';
 
 import {
@@ -55,10 +50,10 @@ const commandHandlers = [
 @Module({
     imports: [
         CqrsModule,
-        TypeOrmModule.forFeature([
-            AppointmentOrmEntity,
-            AppointmentStatusHistoryOrmEntity,
-        ]),
+        // TypeOrmModule.forFeature([
+        //     AppointmentOrmEntity,
+        //     AppointmentStatusHistoryOrmEntity,
+        // ]),
     ],
     controllers: [AppointmentController],
     providers: [

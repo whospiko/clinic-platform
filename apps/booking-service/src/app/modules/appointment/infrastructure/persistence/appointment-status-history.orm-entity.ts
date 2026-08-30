@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 import { AppointmentStatus } from '../../domain/appointment-status.enum';
-import { AppointmentOrmEntity } from './appointment.orm-entity';
+import { AppointmentOrmEntity } from './appointment.entity';
 
 @Entity('appointment_status_histories')
 export class AppointmentStatusHistoryOrmEntity {

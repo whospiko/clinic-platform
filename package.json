@@ -4,7 +4,11 @@
   "license": "MIT",
   "scripts": {
     "dev:booking": "nx serve booking-service",
-    "dev:patient": "nx serve patient-service"
+    "dev:patient": "nx serve patient-service",
+    "migrate:booking": "nx run booking-service:migration-run",
+    "migrate:booking:show": "nx run booking-service:migration-show",
+    "migrate:booking:revert": "nx run booking-service:migration-revert",
+    "migrate:booking:generate": "nx run booking-service:migration-generate"
   },
   "private": true,
   "dependencies": {
@@ -44,6 +48,8 @@
     "jsonc-eslint-parser": "^2.1.0",
     "nx": "23.1.2",
     "prettier": "~3.6.2",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "tslib": "^2.3.0",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.58.0",

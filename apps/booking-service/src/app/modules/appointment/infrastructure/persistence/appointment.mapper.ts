@@ -1,7 +1,7 @@
 import { AppointmentAggregate } from '../../domain/appointment.aggregate';
 import { AppointmentStatusHistoryEntity } from '../../domain/appointment-status-history.entity';
 
-import { AppointmentOrmEntity } from './appointment.orm-entity';
+import { AppointmentOrmEntity } from './appointment.entity';
 import { AppointmentStatusHistoryOrmEntity } from './appointment-status-history.orm-entity';
 
 export class AppointmentMapper {
