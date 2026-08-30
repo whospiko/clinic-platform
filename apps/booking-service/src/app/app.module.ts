@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppointmentModule } from './appointment/appointment.module';
+import { PatientClientModule } from './patient-client/patient-client.module';
+import { AppointmentModule } from './modules/appointment/appointment.module';
 
 @Module({
   imports: [
@@ -8,7 +9,8 @@ import { AppointmentModule } from './appointment/appointment.module';
       isGlobal: true,
       envFilePath: 'apps/booking-service/.env',
     }),
-    AppointmentModule,
+    PatientClientModule,
+    AppointmentModule
   ],
   controllers: [],
   providers: [],

@@ -1,17 +1,18 @@
 services:
-  postgres:
-    image: postgres:17-alpine
-    container_name: clinic-postgres
+  mysql:
+    image: mysql:8.4
+    container_name: clinic-mysql
     restart: unless-stopped
     environment:
-      POSTGRES_USER: clinic
-      POSTGRES_PASSWORD: clinic_password
-      POSTGRES_DB: clinic_root
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: clinic_root
+      MYSQL_USER: clinic
+      MYSQL_PASSWORD: clinic_password
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
-      - clinic_postgres_data:/var/lib/postgresql/data
-      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - clinic_mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
 
 volumes:
-  clinic_postgres_data:
+  clinic_mysql_data:

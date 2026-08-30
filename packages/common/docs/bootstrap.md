@@ -1,0 +1,4 @@
+- ValidationPipe
+- ExceptionFilter
+- ResponseInterceptor
+- Swagger setup

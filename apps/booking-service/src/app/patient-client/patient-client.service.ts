@@ -1,9 +1,11 @@
 import {
   BadGatewayException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom, timeout } from 'rxjs';
 
 export type PatientForBooking = {
   id: string;
@@ -15,21 +17,30 @@ export type PatientForBooking = {
 
 @Injectable()
 export class PatientClientService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    @Inject('PATIENT_SERVICE_CLIENT')
+    private readonly patientClient: ClientProxy,
+  ) { }
 
   async getPatientForBooking(patientId: string): Promise<PatientForBooking> {
-    const baseUrl = this.configService.getOrThrow<string>('PATIENT_SERVICE_URL');
+    try {
+      return await firstValueFrom(
+        this.patientClient
+          .send<PatientForBooking, { patientId: string }>(
+            { cmd: 'patient.findForBooking' },
+            { patientId },
+          )
+          .pipe(timeout(3000)),
+      );
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Patient service unavailable';
 
-    const response = await fetch(`${baseUrl}/internal/patients/${patientId}`);
+      if (message.includes('Patient not found')) {
+        throw new NotFoundException('Patient does not exist');
+      }
 
-    if (response.status === 404) {
-      throw new NotFoundException('Patient does not exist');
-    }
-
-    if (!response.ok) {
       throw new BadGatewayException('Patient service unavailable');
     }
-
-    return response.json() as Promise<PatientForBooking>;
   }
 }
