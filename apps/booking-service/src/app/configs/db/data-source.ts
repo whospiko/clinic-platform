@@ -2,7 +2,12 @@ import 'dotenv/config';
 import { DataSource } from 'typeorm';
 
 import { AppointmentOrmEntity } from '../../modules/appointment/infrastructure/persistence/appointment.entity';
-import { AppointmentStatusHistoryOrmEntity } from '../../modules/appointment/infrastructure/persistence/appointment-status-history.orm-entity';
+import { AppointmentStatusHistoryOrmEntity } from '../../modules/appointment/infrastructure/persistence/appointment-status-history.entity';
+import { ScheduleTemplateOrmEntity } from '../../modules/schedule/infrastructure/persistence/schedule-template.entity';
+import { WorkingWindowOrmEntity } from '../../modules/schedule/infrastructure/persistence/working-window.entity';
+import { BreakTimeOrmEntity } from '../../modules/schedule/infrastructure/persistence/break-time.entity';
+import { ScheduleOverrideOrmEntity } from '../../modules/schedule/infrastructure/persistence/schedule-override.entity';
+import { DentalChairOrmEntity } from '../../modules/resource/infrastructure/persistence/dental-chair.orm-entity';
 
 export default new DataSource({
   type: 'mysql',
@@ -16,6 +21,11 @@ export default new DataSource({
   entities: [
     AppointmentOrmEntity,
     AppointmentStatusHistoryOrmEntity,
+    ScheduleTemplateOrmEntity,
+    WorkingWindowOrmEntity,
+    BreakTimeOrmEntity,
+    ScheduleOverrideOrmEntity,
+    DentalChairOrmEntity,
   ],
 
   migrations: [

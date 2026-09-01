@@ -3,6 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { PatientClientModule } from './patient-client/patient-client.module';
 import { AppointmentModule } from './modules/appointment/appointment.module';
 import { DatabaseModule } from './configs/db/database.module';
+import { ScheduleModule } from './modules/schedule/schedule.module';
+import { AvailabilityModule } from './modules/availability/availability.module';
+import { ResourceModule } from './modules/resource/resource.module';
 
 @Module({
   imports: [
@@ -12,6 +15,9 @@ import { DatabaseModule } from './configs/db/database.module';
     }),
     PatientClientModule,
     AppointmentModule,
+    ScheduleModule,
+    AvailabilityModule,
+    ResourceModule,
     DatabaseModule
   ],
   controllers: [],

@@ -1,4 +1,4 @@
-import { Inject, BadRequestException } from '@nestjs/common';
+import { Inject, BadRequestException, Logger } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { randomUUID } from 'crypto';
 
@@ -60,8 +60,10 @@ export class CreateAppointmentHandler
     ) { }
 
     async execute(command: CreateAppointmentCommand): Promise<AppointmentResponseDto> {
-        await this.patientValidator.ensurePatientExists(command.patientId);
-        await this.doctorValidator.ensureDoctorExists(command.doctorId);
+        //await this.patientValidator.ensurePatientExists(command.patientId);
+        //await this.doctorValidator.ensureDoctorExists(command.doctorId);
+
+        Logger.debug(`Creating appointment for patient ${command.patientId} with doctor ${command.doctorId} starting at ${command.startAt.toISOString()}`);
 
         const endAt = await this.resolveEndAt(command);
 
@@ -82,6 +84,8 @@ export class CreateAppointmentHandler
             endAt,
             note: command.note,
         });
+
+        Logger.debug(`Saving appointment ${appointment.getAppointmentNo()} for patient ${appointment.getPatientId()} with doctor ${appointment.getDoctorId()} starting at ${appointment.getStartAt().toISOString()}`);
 
         await this.appointmentRepository.save(appointment);
 

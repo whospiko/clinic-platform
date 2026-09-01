@@ -39,6 +39,20 @@ import { CancelAppointmentHandler } from './application/handlers/cancel-appointm
 import { RescheduleAppointmentHandler } from './application/handlers/reschedule-appointment.handler';
 import { CompleteAppointmentHandler } from './application/handlers/complete-appointment.handler';
 
+import {
+    APPOINTMENT_QUERY_REPOSITORY,
+} from './application/ports/appointment-query.repository';
+
+import { ListAppointmentsHandler } from './application/handlers/list-appointments.handler';
+import { GetAppointmentHandler } from './application/handlers/get-appointment.handler';
+import { GetAppointmentByNoHandler } from './application/handlers/get-appointment-by-no.handler';
+import { GetAppointmentHistoryHandler } from './application/handlers/get-appointment-history.handler';
+import { GetDoctorBusySlotsHandler } from './application/handlers/get-doctor-busy-slots.handler';
+import { CheckDoctorAvailabilityHandler } from './application/handlers/check-doctor-availability.handler';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppointmentOrmEntity } from './infrastructure/persistence/appointment.entity';
+import { AppointmentStatusHistoryOrmEntity } from './infrastructure/persistence/appointment-status-history.entity';
+
 const commandHandlers = [
     CreateAppointmentHandler,
     ConfirmAppointmentHandler,
@@ -47,17 +61,27 @@ const commandHandlers = [
     CompleteAppointmentHandler,
 ];
 
+const queryHandlers = [
+    ListAppointmentsHandler,
+    GetAppointmentHandler,
+    GetAppointmentByNoHandler,
+    GetAppointmentHistoryHandler,
+    GetDoctorBusySlotsHandler,
+    CheckDoctorAvailabilityHandler,
+];
+
 @Module({
     imports: [
         CqrsModule,
-        // TypeOrmModule.forFeature([
-        //     AppointmentOrmEntity,
-        //     AppointmentStatusHistoryOrmEntity,
-        // ]),
+        TypeOrmModule.forFeature([
+            AppointmentOrmEntity,
+            AppointmentStatusHistoryOrmEntity,
+        ]),
     ],
     controllers: [AppointmentController],
     providers: [
         ...commandHandlers,
+        ...queryHandlers,
 
         TypeOrmAppointmentRepository,
         {
@@ -65,10 +89,13 @@ const commandHandlers = [
             useExisting: TypeOrmAppointmentRepository,
         },
         {
+            provide: APPOINTMENT_QUERY_REPOSITORY,
+            useExisting: TypeOrmAppointmentRepository,
+        },
+        {
             provide: AVAILABILITY_CHECKER,
             useExisting: TypeOrmAppointmentRepository,
         },
-
         {
             provide: APPOINTMENT_NO_GENERATOR,
             useClass: AppointmentNoGenerator,
@@ -84,7 +111,7 @@ const commandHandlers = [
         {
             provide: TREATMENT_READER,
             useClass: TreatmentHttpClient,
-        },
+        }
     ],
 })
 export class AppointmentModule { }

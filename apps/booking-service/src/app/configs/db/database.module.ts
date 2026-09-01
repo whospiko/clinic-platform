@@ -1,6 +1,13 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
+import { AppointmentOrmEntity } from '../../modules/appointment/infrastructure/persistence/appointment.entity';
+import { AppointmentStatusHistoryOrmEntity } from '../../modules/appointment/infrastructure/persistence/appointment-status-history.entity';
+import { ScheduleOverrideOrmEntity } from '../../modules/schedule/infrastructure/persistence/schedule-override.entity';
+import { BreakTimeOrmEntity } from '../../modules/schedule/infrastructure/persistence/break-time.entity';
+import { WorkingWindowOrmEntity } from '../../modules/schedule/infrastructure/persistence/working-window.entity';
+import { ScheduleTemplateOrmEntity } from '../../modules/schedule/infrastructure/persistence/schedule-template.entity';
+import { DentalChairOrmEntity } from '../../modules/resource/infrastructure/persistence/dental-chair.orm-entity';
 
 @Global()
 @Module({
@@ -24,7 +31,13 @@ import { DataSource } from 'typeorm';
           synchronize: false,
 
           entities: [
-            `${__dirname}/../../**/*.entity{.ts,.js}`,
+            AppointmentOrmEntity,
+            AppointmentStatusHistoryOrmEntity,
+            ScheduleTemplateOrmEntity,
+            WorkingWindowOrmEntity,
+            BreakTimeOrmEntity,
+            ScheduleOverrideOrmEntity,
+            DentalChairOrmEntity,
           ],
         });
 

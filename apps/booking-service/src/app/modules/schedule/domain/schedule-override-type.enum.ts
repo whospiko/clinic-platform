@@ -1,0 +1,5 @@
+export enum ScheduleOverrideType {
+    CLOSED_DAY = 'CLOSED_DAY',
+    EXTRA_WORKING_TIME = 'EXTRA_WORKING_TIME',
+    CUSTOM_BREAK = 'CUSTOM_BREAK',
+}

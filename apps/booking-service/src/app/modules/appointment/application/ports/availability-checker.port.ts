@@ -7,4 +7,11 @@ export interface AvailabilityCheckerPort {
         endAt: Date;
         excludeAppointmentId?: string;
     }): Promise<void>;
+
+    isDoctorAvailable(params: {
+        doctorId: string;
+        startAt: Date;
+        endAt: Date;
+        excludeAppointmentId?: string;
+    }): Promise<boolean>;
 }

@@ -14,6 +14,8 @@ export class DoctorHttpClient implements DoctorValidatorPort {
             // await this.httpService.axiosRef.get(
             //     `${this.baseUrl}/internal/doctors/${doctorId}`,
             // );
+            return Promise.resolve();
+            
         } catch (error: any) {
             if (error.response?.status === 404) {
                 throw new NotFoundException('Doctor not found.');

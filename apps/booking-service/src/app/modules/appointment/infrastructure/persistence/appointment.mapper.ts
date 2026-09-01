@@ -2,7 +2,7 @@ import { AppointmentAggregate } from '../../domain/appointment.aggregate';
 import { AppointmentStatusHistoryEntity } from '../../domain/appointment-status-history.entity';
 
 import { AppointmentOrmEntity } from './appointment.entity';
-import { AppointmentStatusHistoryOrmEntity } from './appointment-status-history.orm-entity';
+import { AppointmentStatusHistoryOrmEntity } from './appointment-status-history.entity';
 
 export class AppointmentMapper {
     static toDomain(entity: AppointmentOrmEntity): AppointmentAggregate {
@@ -20,7 +20,9 @@ export class AppointmentMapper {
             cancelReason: entity.cancelReason,
             createdAt: entity.createdAt,
             updatedAt: entity.updatedAt,
-            histories: entity.histories?.map(this.historyToDomain) ?? [],
+            histories: entity.histories?.map((history) =>
+                AppointmentMapper.historyToDomain(history),
+            ) ?? [],
         });
     }
 
@@ -40,9 +42,10 @@ export class AppointmentMapper {
         entity.cancelReason = appointment.getCancelReason();
         entity.createdAt = appointment.getCreatedAt();
         entity.updatedAt = appointment.getUpdatedAt();
-        entity.histories = appointment
-            .getHistories()
-            .map(history => this.historyToOrm(history, appointment.getId()));
+
+        entity.histories = appointment.getHistories().map((history) =>
+            AppointmentMapper.historyToOrm(history, appointment.getId()),
+        );
 
         return entity;
     }

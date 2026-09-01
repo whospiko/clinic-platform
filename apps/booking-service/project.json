@@ -79,36 +79,45 @@
     "migration-run": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "TS_NODE_PROJECT=apps/booking-service/tsconfig.app.json TS_NODE_COMPILER_OPTIONS='{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}' node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d apps/booking-service/src/app/configs/db/data-source.ts",
-        "cwd": "."
+        "command": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d apps/booking-service/src/app/configs/db/data-source.ts",
+        "cwd": ".",
+        "env": {
+          "TS_NODE_PROJECT": "apps/booking-service/tsconfig.app.json",
+          "TS_NODE_COMPILER_OPTIONS": "{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}"
+        }
       }
     },
     "migration-revert": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "TS_NODE_PROJECT=apps/booking-service/tsconfig.app.json TS_NODE_COMPILER_OPTIONS='{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}' node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d apps/booking-service/src/app/configs/db/data-source.ts",
-        "cwd": "."
+        "command": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d apps/booking-service/src/app/configs/db/data-source.ts",
+        "cwd": ".",
+        "env": {
+          "TS_NODE_PROJECT": "apps/booking-service/tsconfig.app.json",
+          "TS_NODE_COMPILER_OPTIONS": "{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}"
+        }
       }
     },
     "migration-show": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "TS_NODE_PROJECT=apps/booking-service/tsconfig.app.json TS_NODE_COMPILER_OPTIONS='{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}' node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:show -d apps/booking-service/src/app/configs/db/data-source.ts",
-        "cwd": "."
+        "command": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:show -d apps/booking-service/src/app/configs/db/data-source.ts",
+        "cwd": ".",
+        "env": {
+          "TS_NODE_PROJECT": "apps/booking-service/tsconfig.app.json",
+          "TS_NODE_COMPILER_OPTIONS": "{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}"
+        }
       }
     },
     "migration-generate": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "TS_NODE_PROJECT=apps/booking-service/tsconfig.app.json TS_NODE_COMPILER_OPTIONS='{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}' node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate apps/booking-service/src/app/configs/db/migrations/auto-migration -d apps/booking-service/src/app/configs/db/data-source.ts",
-        "cwd": "."
-      }
-    },
-    "migration-create": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node ./node_modules/typeorm/cli.js migration:create apps/booking-service/src/app/configs/db/migrations/manual-migration",
-        "cwd": "."
+        "command": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate apps/booking-service/src/app/configs/db/migrations/auto-migration -d apps/booking-service/src/app/configs/db/data-source.ts",
+        "cwd": ".",
+        "env": {
+          "TS_NODE_PROJECT": "apps/booking-service/tsconfig.app.json",
+          "TS_NODE_COMPILER_OPTIONS": "{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}"
+        }
       }
     }
   }

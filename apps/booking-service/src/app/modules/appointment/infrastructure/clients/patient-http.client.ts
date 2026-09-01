@@ -14,6 +14,7 @@ export class PatientHttpClient implements PatientValidatorPort {
             // await this.httpService.axiosRef.get(
             //     `${this.baseUrl}/internal/patients/${patientId}`,
             // );
+            return Promise.resolve();
         } catch (error: any) {
             if (error.response?.status === 404) {
                 throw new NotFoundException('Patient not found.');

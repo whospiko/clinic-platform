@@ -10,7 +10,7 @@ import {
 
 import { AppointmentStatus } from '../../domain/appointment-status.enum';
 import { AppointmentSource } from '../../domain/appointment-source.enum';
-import { AppointmentStatusHistoryOrmEntity } from './appointment-status-history.orm-entity';
+import { AppointmentStatusHistoryOrmEntity } from './appointment-status-history.entity';
 
 @Entity('appointments')
 @Index('idx_appointments_doctor_time', ['doctorId', 'startAt', 'endAt'])
