@@ -8,6 +8,8 @@ import { BreakTimeOrmEntity } from '../../modules/schedule/infrastructure/persis
 import { WorkingWindowOrmEntity } from '../../modules/schedule/infrastructure/persistence/working-window.entity';
 import { ScheduleTemplateOrmEntity } from '../../modules/schedule/infrastructure/persistence/schedule-template.entity';
 import { DentalChairOrmEntity } from '../../modules/resource/infrastructure/persistence/dental-chair.orm-entity';
+import { AppointmentHoldOrmEntity } from '../../modules/hold/infrastructure/persistence/appointment-hold.entity';
+import { WaitlistEntryOrmEntity } from '../../modules/waitlist/infrastructure/persistence/waitlist-entry.entity';
 
 @Global()
 @Module({
@@ -38,6 +40,8 @@ import { DentalChairOrmEntity } from '../../modules/resource/infrastructure/pers
             BreakTimeOrmEntity,
             ScheduleOverrideOrmEntity,
             DentalChairOrmEntity,
+            AppointmentHoldOrmEntity,
+            WaitlistEntryOrmEntity
           ],
         });
 

@@ -8,6 +8,8 @@ import { WorkingWindowOrmEntity } from '../../modules/schedule/infrastructure/pe
 import { BreakTimeOrmEntity } from '../../modules/schedule/infrastructure/persistence/break-time.entity';
 import { ScheduleOverrideOrmEntity } from '../../modules/schedule/infrastructure/persistence/schedule-override.entity';
 import { DentalChairOrmEntity } from '../../modules/resource/infrastructure/persistence/dental-chair.orm-entity';
+import { AppointmentHoldOrmEntity } from '../../modules/hold/infrastructure/persistence/appointment-hold.entity';
+import { WaitlistEntryOrmEntity } from '../../modules/waitlist/infrastructure/persistence/waitlist-entry.entity';
 
 export default new DataSource({
   type: 'mysql',
@@ -26,6 +28,8 @@ export default new DataSource({
     BreakTimeOrmEntity,
     ScheduleOverrideOrmEntity,
     DentalChairOrmEntity,
+    AppointmentHoldOrmEntity,
+    WaitlistEntryOrmEntity
   ],
 
   migrations: [
