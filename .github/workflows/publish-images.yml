@@ -127,3 +127,71 @@ jobs:
 
           cache-to: |
             type=gha,scope=${{ matrix.app }},mode=max
+
+
+
+  # --------------------------------------------------
+  # Trigger GitOps repository update
+  # --------------------------------------------------
+  update-gitops:
+
+    needs:
+      - detect
+      - build-images
+
+    if: needs.detect.outputs.apps != '[]'
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout GitOps repository
+        uses: actions/checkout@v7
+        with:
+          repository: whospiko/clinic-gitops
+          token: ${{ secrets.GITOPS_TOKEN }}
+          path: gitops
+
+      - name: Update image tags
+        shell: bash
+        env:
+          APPS: ${{ needs.detect.outputs.apps }}
+
+        run: |
+          TAG="sha-${GITHUB_SHA}"
+
+          echo "${APPS}" | jq -r '.[]' | while read APP
+          do
+            FILE="gitops/environments/dev/${APP}/values.yaml"
+
+            echo "Updating ${APP} -> ${TAG}"
+
+            if [ ! -f "${FILE}" ]; then
+              echo "GitOps values file not found: ${FILE}"
+              exit 1
+            fi
+
+            sed -i -E \
+              "s|^([[:space:]]*)tag:.*|\1tag: \"${TAG}\"|" \
+              "${FILE}"
+          done
+
+      - name: Commit GitOps changes
+        working-directory: gitops
+        shell: bash
+
+        run: |
+          git config user.name "clinic-ci-bot"
+          git config user.email "clinic-ci-bot@users.noreply.github.com"
+
+          if git diff --quiet; then
+            echo "No GitOps changes."
+            exit 0
+          fi
+
+          git add environments/dev
+
+          git commit \
+            -m "deploy(dev): ${GITHUB_SHA}"
+
+          git push
