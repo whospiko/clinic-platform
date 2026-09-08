@@ -178,7 +178,8 @@ jobs:
 
         with:
           repository: whospiko/clinic-gitops
-          token: ${{ secrets.GITOPS_TOKEN }}
+          #-------------- Public For Now --------------#
+          # token: ${{ secrets.GITOPS_TOKEN }}
           path: clinic-gitops
 
       - name: Update DEV image versions
