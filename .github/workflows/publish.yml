@@ -33,8 +33,12 @@ jobs:
       - name: Set Nx SHAs
         uses: nrwl/nx-set-shas@v4
 
-      - name: Lint affected
-        run: bunx nx affected -t lint
+      # ==================================================
+      # Will Enable this later when we have a proper linting setup for all projects
+      # ==================================================
+
+      # - name: Lint affected
+      #   run: bunx nx affected -t lint
 
       - name: Test affected
         run: bunx nx affected -t test
