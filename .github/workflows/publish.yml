@@ -1,9 +1,9 @@
-name: Publish Service Images
+name: Publish
 
 on:
   push:
     branches:
-      - main
+      - dev
 
 permissions:
   contents: read
@@ -12,10 +12,13 @@ permissions:
 
 jobs:
 
-  # --------------------------------------------------
-  # Detect affected Nx applications
-  # --------------------------------------------------
+  # ==================================================
+  # 2. Detect deployable affected applications
+  # ==================================================
   detect:
+    needs:
+      - verify
+
     runs-on: ubuntu-latest
 
     outputs:
@@ -23,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -34,9 +37,9 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Set Nx SHAs
-        uses: nrwl/nx-set-shas@v5
+        uses: nrwl/nx-set-shas@v4
 
-      - name: Detect affected deployable services
+      - name: Detect affected services
         id: affected
         shell: bash
         run: |
@@ -54,21 +57,24 @@ jobs:
                   )
               ]')
 
-          echo "Affected applications: $APPS"
+          echo "Affected apps: $APPS"
+
           echo "apps=$APPS" >> "$GITHUB_OUTPUT"
 
 
-  # --------------------------------------------------
-  # Docker build + GHCR push
-  # --------------------------------------------------
-  build-images:
+  # ==================================================
+  # 3. Docker build / GHCR push
+  # ==================================================
+  publish:
     needs:
+      - verify
       - detect
 
     if: needs.detect.outputs.apps != '[]'
 
     strategy:
       fail-fast: false
+
       matrix:
         app: ${{ fromJson(needs.detect.outputs.apps) }}
 
@@ -76,39 +82,30 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
-      - name: Prepare registry values
-        id: registry
+      - name: Prepare image variables
+        id: vars
         shell: bash
         run: |
           OWNER=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
 
           echo "owner=$OWNER" >> "$GITHUB_OUTPUT"
-          echo "tag=sha-${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "tag=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
 
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to GHCR
-        uses: docker/login-action@v4
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Docker metadata
-        id: metadata
-        uses: docker/metadata-action@v6
-        with:
-          images: |
-            ghcr.io/${{ steps.registry.outputs.owner }}/${{ matrix.app }}
-
-          tags: |
-            type=raw,value=${{ steps.registry.outputs.tag }}
-
       - name: Build and push
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@v6
+
         with:
           context: .
           file: docker/Dockerfile.nest
@@ -119,8 +116,8 @@ jobs:
             APP_NAME=${{ matrix.app }}
             SOURCE_URL=https://github.com/${{ github.repository }}
 
-          tags: ${{ steps.metadata.outputs.tags }}
-          labels: ${{ steps.metadata.outputs.labels }}
+          tags: |
+            ghcr.io/${{ steps.vars.outputs.owner }}/${{ matrix.app }}:${{ steps.vars.outputs.tag }}
 
           cache-from: |
             type=gha,scope=${{ matrix.app }}
@@ -129,63 +126,64 @@ jobs:
             type=gha,scope=${{ matrix.app }},mode=max
 
 
-
-  # --------------------------------------------------
-  # Trigger GitOps repository update
-  # --------------------------------------------------
+  # ==================================================
+  # 4. Update GitOps dev environment
+  # ==================================================
   update-gitops:
-
     needs:
       - detect
-      - build-images
+      - publish
 
     if: needs.detect.outputs.apps != '[]'
 
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout GitOps repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
+
         with:
           repository: whospiko/clinic-gitops
           token: ${{ secrets.GITOPS_TOKEN }}
-          path: gitops
+          path: clinic-gitops
 
-      - name: Update image tags
+      - name: Update DEV image versions
         shell: bash
+
         env:
           APPS: ${{ needs.detect.outputs.apps }}
 
         run: |
-          TAG="sha-${GITHUB_SHA}"
+          TAG="${GITHUB_SHA}"
 
-          echo "${APPS}" | jq -r '.[]' | while read APP
+          echo "$APPS" | jq -r '.[]' | while read APP
           do
-            FILE="gitops/environments/dev/${APP}/values.yaml"
+            VALUES_FILE="clinic-gitops/environments/dev/${APP}/values.yaml"
 
-            echo "Updating ${APP} -> ${TAG}"
+            echo "Updating:"
+            echo "${VALUES_FILE}"
+            echo "Image tag: ${TAG}"
 
-            if [ ! -f "${FILE}" ]; then
-              echo "GitOps values file not found: ${FILE}"
+            if [ ! -f "${VALUES_FILE}" ]; then
+              echo "ERROR: file does not exist:"
+              echo "${VALUES_FILE}"
               exit 1
             fi
 
             sed -i -E \
               "s|^([[:space:]]*)tag:.*|\1tag: \"${TAG}\"|" \
-              "${FILE}"
+              "${VALUES_FILE}"
           done
 
-      - name: Commit GitOps changes
-        working-directory: gitops
-        shell: bash
+      - name: Commit GitOps change
+        working-directory: clinic-gitops
 
         run: |
-          git config user.name "clinic-ci-bot"
-          git config user.email "clinic-ci-bot@users.noreply.github.com"
+          git config user.name "clinic-ci"
+          git config user.email "clinic-ci@users.noreply.github.com"
 
           if git diff --quiet; then
-            echo "No GitOps changes."
+            echo "No GitOps changes detected."
             exit 0
           fi
 
