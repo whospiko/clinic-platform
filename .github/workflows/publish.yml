@@ -179,8 +179,10 @@ jobs:
         with:
           repository: whospiko/clinic-gitops
           #-------------- Public For Now --------------#
-          # token: ${{ secrets.GITOPS_TOKEN }}
+          ref: main
+          token: ${{ secrets.GITOPS_TOKEN }}
           path: clinic-gitops
+          persist-credentials: true
 
       - name: Update DEV image versions
         shell: bash
