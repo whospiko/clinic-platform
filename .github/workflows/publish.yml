@@ -239,9 +239,14 @@ jobs:
         shell: bash
         env:
           GITOPS_TOKEN: ${{ secrets.GITOPS_TOKEN }}
+          GITOPS_USERNAME: whospiko
         run: |
           git config user.name "clinic-ci"
           git config user.email "clinic-ci@users.noreply.github.com"
+
+          # Remove any credential header injected by actions/checkout
+          git config --local --unset-all http.https://github.com/.extraheader || true
+          git config --global --unset-all http.https://github.com/.extraheader || true
 
           if git diff --quiet; then
             echo "No GitOps changes detected."
@@ -249,9 +254,11 @@ jobs:
           fi
 
           git add environments/dev
-
           git commit -m "deploy(dev): ${GITHUB_SHA}"
 
-          git remote set-url origin "https://x-access-token:${GITOPS_TOKEN}@github.com/whospiko/clinic-gitops.git"
+          # Use PAT as password. Do not use x-access-token for this PAT test.
+          git push "https://${GITOPS_USERNAME}:${GITOPS_TOKEN}@github.com/whospiko/clinic-gitops.git" HEAD:main
 
-          git push origin HEAD:main
+
+
+          
