@@ -1,0 +1,61 @@
+# ============================================
+# Base
+# ============================================
+FROM oven/bun:1.2-alpine AS base
+
+WORKDIR /workspace
+
+
+# ============================================
+# Dependencies
+# ============================================
+FROM base AS dependencies
+
+COPY package.json bun.lock ./
+COPY nx.json tsconfig.base.json ./
+
+COPY apps ./apps
+COPY packages ./packages
+
+RUN bun install --frozen-lockfile
+
+
+# ============================================
+# Builder
+# ============================================
+FROM dependencies AS builder
+
+ARG APP_NAME
+
+RUN bunx nx build ${APP_NAME} --configuration=production
+
+RUN mkdir -p /output \
+    && cp -R dist/apps/${APP_NAME}/. /output/
+
+
+# ============================================
+# Runtime
+# ============================================
+FROM oven/bun:1.2-alpine AS runtime
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+ARG SOURCE_URL
+
+LABEL org.opencontainers.image.source=${SOURCE_URL}
+
+# Initial/simple approach:
+# copy installed dependencies from builder.
+#
+# Later we can optimize this using Nx deployment pruning.
+COPY --from=dependencies /workspace/node_modules ./node_modules
+
+COPY --from=builder /output ./
+
+USER bun
+
+EXPOSE 3000
+
+CMD ["bun", "main.js"]

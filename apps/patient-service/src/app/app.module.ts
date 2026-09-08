@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { PatientModule } from './patient/patient.module';
 
 @Module({
   imports: [
@@ -8,7 +7,6 @@ import { PatientModule } from './patient/patient.module';
       isGlobal: true,
       envFilePath: 'apps/patient-service/.env',
     }),
-    PatientModule,
   ],
   controllers: [],
   providers: [],
