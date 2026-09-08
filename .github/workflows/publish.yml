@@ -178,7 +178,7 @@ jobs:
         with:
           repository: whospiko/clinic-gitops
           ref: main
-          token: ${{ secrets.GITOPS_TOKEN }}
+          ssh-key: ${{ secrets.GITOPS_SSH_KEY }}
           path: clinic-gitops
           persist-credentials: false
 
@@ -206,47 +206,12 @@ jobs:
               "${VALUES_FILE}"
           done
 
-      - name: Check GitOps token permission
-        shell: bash
-        env:
-          GITOPS_TOKEN: ${{ secrets.GITOPS_TOKEN }}
-        run: |
-          STATUS=$(curl -sS -o repo.json -w "%{http_code}" \
-            -H "Authorization: Bearer ${GITOPS_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/whospiko/clinic-gitops)
-
-          echo "GitHub API status: ${STATUS}"
-
-          cat repo.json | jq '{full_name, private, permissions}'
-
-          if [ "${STATUS}" != "200" ]; then
-            echo "ERROR: Token cannot access whospiko/clinic-gitops"
-            exit 1
-          fi
-
-          CAN_PUSH=$(cat repo.json | jq -r '.permissions.push')
-
-          if [ "${CAN_PUSH}" != "true" ]; then
-            echo "ERROR: GITOPS_TOKEN can access repo but cannot push"
-            exit 1
-          fi
-
-          echo "GITOPS_TOKEN has push permission."
-
       - name: Commit GitOps change
         working-directory: clinic-gitops
         shell: bash
-        env:
-          GITOPS_TOKEN: ${{ secrets.GITOPS_TOKEN }}
-          GITOPS_USERNAME: whospiko
         run: |
           git config user.name "clinic-ci"
           git config user.email "clinic-ci@users.noreply.github.com"
-
-          # Remove any credential header injected by actions/checkout
-          git config --local --unset-all http.https://github.com/.extraheader || true
-          git config --global --unset-all http.https://github.com/.extraheader || true
 
           if git diff --quiet; then
             echo "No GitOps changes detected."
@@ -256,9 +221,5 @@ jobs:
           git add environments/dev
           git commit -m "deploy(dev): ${GITHUB_SHA}"
 
-          # Use PAT as password. Do not use x-access-token for this PAT test.
-          git push "https://${GITOPS_USERNAME}:${GITOPS_TOKEN}@github.com/whospiko/clinic-gitops.git" HEAD:main
-
-
-
-          
+          git remote set-url origin git@github.com:whospiko/clinic-gitops.git
+          git push origin HEAD:main
