@@ -13,6 +13,36 @@ permissions:
 jobs:
 
   # ==================================================
+  # 1. Verify
+  # ==================================================
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Set Nx SHAs
+        uses: nrwl/nx-set-shas@v4
+
+      - name: Lint affected
+        run: bunx nx affected -t lint
+
+      - name: Test affected
+        run: bunx nx affected -t test
+
+      - name: Build affected
+        run: bunx nx affected -t build
+
+  # ==================================================
   # 2. Detect deployable affected applications
   # ==================================================
   detect:
