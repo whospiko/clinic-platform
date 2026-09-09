@@ -44,13 +44,17 @@ RUN mkdir -p /output \
     && cp -R dist/apps/${APP_NAME}/. /output/
 
 # Copy migrate.js into final output only when it exists
-RUN if [ -f "dist/apps/${APP_NAME}-migrate/migrate.js" ]; then \
+RUN if [ "${APP_NAME}" = "booking-service" ]; then \
+      echo "Copying booking-service migrate.js..."; \
+      test -f dist/apps/${APP_NAME}-migrate/migrate.js; \
       cp dist/apps/${APP_NAME}-migrate/migrate.js /output/migrate.js; \
+      test -f /output/migrate.js; \
       echo "Copied migrate.js to runtime output."; \
     else \
-      echo "No migrate.js generated for ${APP_NAME}."; \
+      echo "No migrate.js required for ${APP_NAME}."; \
     fi
 
+RUN echo "Final output:" && ls -la /output
 
 # ============================================
 # Runtime
