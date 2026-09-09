@@ -1,15 +1,25 @@
 import 'dotenv/config';
 import { DataSource } from 'typeorm';
+import * as path from 'node:path';
+import { bookingMigrations } from './migrations';
 
-import { AppointmentOrmEntity } from '../../modules/appointment/infrastructure/persistence/appointment.entity';
-import { AppointmentStatusHistoryOrmEntity } from '../../modules/appointment/infrastructure/persistence/appointment-status-history.entity';
-import { ScheduleTemplateOrmEntity } from '../../modules/schedule/infrastructure/persistence/schedule-template.entity';
-import { WorkingWindowOrmEntity } from '../../modules/schedule/infrastructure/persistence/working-window.entity';
-import { BreakTimeOrmEntity } from '../../modules/schedule/infrastructure/persistence/break-time.entity';
-import { ScheduleOverrideOrmEntity } from '../../modules/schedule/infrastructure/persistence/schedule-override.entity';
-import { DentalChairOrmEntity } from '../../modules/resource/infrastructure/persistence/dental-chair.orm-entity';
-import { AppointmentHoldOrmEntity } from '../../modules/hold/infrastructure/persistence/appointment-hold.entity';
-import { WaitlistEntryOrmEntity } from '../../modules/waitlist/infrastructure/persistence/waitlist-entry.entity';
+
+const isTsRuntime = __filename.endsWith('.ts');
+
+const entitiesGlob = isTsRuntime
+  ? path.join(
+    process.cwd(),
+    'apps/booking-service/src/app/modules/**/infrastructure/persistence/*.entity.ts',
+  )
+  : path.join(
+    __dirname,
+    '../../modules/**/infrastructure/persistence/*.entity.js',
+  );
+
+const migrationsGlob = isTsRuntime
+  ? path.join(__dirname, 'migrations/*.ts')
+  : path.join(__dirname, 'migrations/*.js');
+
 
 export default new DataSource({
   type: 'mysql',
@@ -20,22 +30,13 @@ export default new DataSource({
   password: process.env.DB_PASSWORD ?? 'clinic_password',
   database: process.env.DB_NAME ?? 'booking_db',
 
-  entities: [
-    AppointmentOrmEntity,
-    AppointmentStatusHistoryOrmEntity,
-    ScheduleTemplateOrmEntity,
-    WorkingWindowOrmEntity,
-    BreakTimeOrmEntity,
-    ScheduleOverrideOrmEntity,
-    DentalChairOrmEntity,
-    AppointmentHoldOrmEntity,
-    WaitlistEntryOrmEntity
-  ],
-
-  migrations: [
-    'apps/booking-service/src/app/configs/db/migrations/*.ts',
-  ],
-
   synchronize: false,
-  logging: true,
+  logging: process.env.DB_LOGGING === 'true',
+
+  entities: [entitiesGlob],
+
+  migrations:
+    process.env.TYPEORM_MIGRATION_MODE === 'bundle'
+      ? bookingMigrations
+      : [migrationsGlob],
 });

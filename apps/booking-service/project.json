@@ -22,6 +22,29 @@
         }
       }
     },
+    "build-migrate": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/booking-service-migrate",
+        "format": [
+          "cjs"
+        ],
+        "bundle": true,
+        "main": "apps/booking-service/src/migrate.ts",
+        "tsConfig": "apps/booking-service/tsconfig.app.json",
+        "outputFileName": "migrate.js",
+        "generatePackageJson": false,
+        "external": [
+          "@nestjs/microservices",
+          "@nestjs/websockets",
+          "class-transformer/storage"
+        ]
+      }
+    },
     "prune-lockfile": {
       "dependsOn": [
         "build"

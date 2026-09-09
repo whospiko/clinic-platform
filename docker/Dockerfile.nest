@@ -27,10 +27,29 @@ FROM dependencies AS builder
 
 ARG APP_NAME
 
+# Build normal application bundle
 RUN bunx nx build ${APP_NAME} --configuration=production
 
+# Build migration bundle only if this app has migrate.ts
+# Example: apps/booking-service/src/migrate.ts
+RUN if [ -f "apps/${APP_NAME}/src/migrate.ts" ]; then \
+      echo "Migration runner found for ${APP_NAME}. Building migrate.js..."; \
+      bunx nx run ${APP_NAME}:build-migrate; \
+    else \
+      echo "No migration runner for ${APP_NAME}. Skipping migrate.js build."; \
+    fi
+
+# Prepare runtime output
 RUN mkdir -p /output \
     && cp -R dist/apps/${APP_NAME}/. /output/
+
+# Copy migrate.js into final output only when it exists
+RUN if [ -f "dist/apps/${APP_NAME}-migrate/migrate.js" ]; then \
+      cp dist/apps/${APP_NAME}-migrate/migrate.js /output/migrate.js; \
+      echo "Copied migrate.js to runtime output."; \
+    else \
+      echo "No migrate.js generated for ${APP_NAME}."; \
+    fi
 
 
 # ============================================
@@ -41,6 +60,7 @@ FROM oven/bun:1.2-alpine AS runtime
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV TYPEORM_MIGRATION_MODE=bundle
 
 ARG SOURCE_URL
 
