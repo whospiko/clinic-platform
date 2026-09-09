@@ -31,27 +31,29 @@ ARG APP_NAME
 RUN bunx nx build ${APP_NAME} --configuration=production
 
 # Build migration bundle only if this app has migrate.ts
-# Example: apps/booking-service/src/migrate.ts
 RUN if [ -f "apps/${APP_NAME}/src/migrate.ts" ]; then \
-      echo "Migration runner found for ${APP_NAME}. Building migrate.js..."; \
+      echo "Migration runner found for ${APP_NAME}. Building migrate.cjs..."; \
       bunx nx run ${APP_NAME}:build-migrate; \
+      echo "Migration output files:"; \
+      ls -la dist/apps/${APP_NAME}-migrate; \
+      test -f dist/apps/${APP_NAME}-migrate/migrate.cjs; \
     else \
-      echo "No migration runner for ${APP_NAME}. Skipping migrate.js build."; \
+      echo "No migration runner found for ${APP_NAME}. Skipping migration build."; \
     fi
 
 # Prepare runtime output
 RUN mkdir -p /output \
     && cp -R dist/apps/${APP_NAME}/. /output/
 
-# Copy migrate.js into final output only when it exists
-RUN if [ "${APP_NAME}" = "booking-service" ]; then \
-      echo "Copying booking-service migrate.js..."; \
-      test -f dist/apps/${APP_NAME}-migrate/migrate.js; \
-      cp dist/apps/${APP_NAME}-migrate/migrate.js /output/migrate.js; \
-      test -f /output/migrate.js; \
-      echo "Copied migrate.js to runtime output."; \
+# Copy migrate.cjs into image only if service has migrate.ts
+RUN if [ -f "apps/${APP_NAME}/src/migrate.ts" ]; then \
+      echo "Copying ${APP_NAME} migrate.cjs..."; \
+      test -f dist/apps/${APP_NAME}-migrate/migrate.cjs; \
+      cp dist/apps/${APP_NAME}-migrate/migrate.cjs /output/migrate.cjs; \
+      test -f /output/migrate.cjs; \
+      echo "Copied migrate.cjs to runtime output."; \
     else \
-      echo "No migrate.js required for ${APP_NAME}."; \
+      echo "No migrate.cjs required for ${APP_NAME}."; \
     fi
 
 RUN echo "Final output:" && ls -la /output
