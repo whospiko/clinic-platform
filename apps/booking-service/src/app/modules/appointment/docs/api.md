@@ -1,6 +1,6 @@
 write actions apis
 
-POST  /appointments
+POST /appointments
 PATCH /appointments/:id/confirm
 PATCH /appointments/:id/cancel
 PATCH /appointments/:id/reschedule

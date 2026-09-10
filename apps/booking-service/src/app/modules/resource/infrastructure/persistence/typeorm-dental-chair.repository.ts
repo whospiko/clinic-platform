@@ -11,87 +11,87 @@ import { DentalChairOrmEntity } from './dental-chair.orm-entity';
 
 @Injectable()
 export class TypeOrmDentalChairRepository implements DentalChairRepository {
-    constructor(
-        @InjectRepository(DentalChairOrmEntity)
-        private readonly repository: Repository<DentalChairOrmEntity>,
-    ) { }
+  constructor(
+    @InjectRepository(DentalChairOrmEntity)
+    private readonly repository: Repository<DentalChairOrmEntity>,
+  ) {}
 
-    async save(chair: DentalChairAggregate): Promise<DentalChairAggregate> {
-        const entity = DentalChairMapper.toOrm(chair);
+  async save(chair: DentalChairAggregate): Promise<DentalChairAggregate> {
+    const entity = DentalChairMapper.toOrm(chair);
 
-        const saved = await this.repository.save(entity);
+    const saved = await this.repository.save(entity);
 
-        return DentalChairMapper.toDomain(saved);
+    return DentalChairMapper.toDomain(saved);
+  }
+
+  async findById(id: string): Promise<DentalChairAggregate | null> {
+    const entity = await this.repository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!entity) {
+      return null;
     }
 
-    async findById(id: string): Promise<DentalChairAggregate | null> {
-        const entity = await this.repository.findOne({
-            where: {
-                id,
-            },
-        });
+    return DentalChairMapper.toDomain(entity);
+  }
 
-        if (!entity) {
-            return null;
-        }
+  async findByCode(
+    code: string,
+    clinicId: string | null,
+  ): Promise<DentalChairAggregate | null> {
+    const query = this.repository
+      .createQueryBuilder('chair')
+      .where('chair.code = :code', {
+        code,
+      });
 
-        return DentalChairMapper.toDomain(entity);
+    if (clinicId) {
+      query.andWhere('chair.clinicId = :clinicId', {
+        clinicId,
+      });
+    } else {
+      query.andWhere('chair.clinicId IS NULL');
     }
 
-    async findByCode(
-        code: string,
-        clinicId: string | null,
-    ): Promise<DentalChairAggregate | null> {
-        const query = this.repository
-            .createQueryBuilder('chair')
-            .where('chair.code = :code', {
-                code,
-            });
+    const entity = await query.getOne();
 
-        if (clinicId) {
-            query.andWhere('chair.clinicId = :clinicId', {
-                clinicId,
-            });
-        } else {
-            query.andWhere('chair.clinicId IS NULL');
-        }
-
-        const entity = await query.getOne();
-
-        if (!entity) {
-            return null;
-        }
-
-        return DentalChairMapper.toDomain(entity);
+    if (!entity) {
+      return null;
     }
 
-    async existsByCode(
-        code: string,
-        clinicId: string | null,
-        excludeId?: string,
-    ): Promise<boolean> {
-        const query = this.repository
-            .createQueryBuilder('chair')
-            .where('chair.code = :code', {
-                code,
-            });
+    return DentalChairMapper.toDomain(entity);
+  }
 
-        if (clinicId) {
-            query.andWhere('chair.clinicId = :clinicId', {
-                clinicId,
-            });
-        } else {
-            query.andWhere('chair.clinicId IS NULL');
-        }
+  async existsByCode(
+    code: string,
+    clinicId: string | null,
+    excludeId?: string,
+  ): Promise<boolean> {
+    const query = this.repository
+      .createQueryBuilder('chair')
+      .where('chair.code = :code', {
+        code,
+      });
 
-        if (excludeId) {
-            query.andWhere('chair.id != :excludeId', {
-                excludeId,
-            });
-        }
-
-        const count = await query.getCount();
-
-        return count > 0;
+    if (clinicId) {
+      query.andWhere('chair.clinicId = :clinicId', {
+        clinicId,
+      });
+    } else {
+      query.andWhere('chair.clinicId IS NULL');
     }
+
+    if (excludeId) {
+      query.andWhere('chair.id != :excludeId', {
+        excludeId,
+      });
+    }
+
+    const count = await query.getCount();
+
+    return count > 0;
+  }
 }

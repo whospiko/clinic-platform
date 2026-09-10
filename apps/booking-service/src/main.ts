@@ -8,7 +8,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { setupServiceApp } from '@clinic/common';
 
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -21,7 +20,7 @@ async function bootstrap() {
     description: 'Internal API for clinic appointment booking',
     version: '1.0.0',
     swaggerPath: 'docs',
-    globalPrefix: 'api'
+    globalPrefix: 'api',
   });
 
   const port = process.env.PORT || 3000;
@@ -29,7 +28,6 @@ async function bootstrap() {
 
   Logger.log(`🚀 Booking Service is running on: http://localhost:${port}`);
   Logger.log(`Booking Swagger docs running on http://localhost:${port}/docs`);
-
 }
 
 bootstrap();

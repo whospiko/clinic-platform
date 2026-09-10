@@ -3,9 +3,9 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import {
-    WAITLIST_APPOINTMENT_HOLD,
-    WAITLIST_AVAILABILITY_CHECKER,
-    WAITLIST_ENTRY_REPOSITORY,
+  WAITLIST_APPOINTMENT_HOLD,
+  WAITLIST_AVAILABILITY_CHECKER,
+  WAITLIST_ENTRY_REPOSITORY,
 } from './waitlist.tokens';
 
 import { WaitlistController } from './presentation/waitlist.controller';
@@ -26,54 +26,49 @@ import { ListWaitlistEntriesHandler } from './application/handlers/list-waitlist
 import { FindWaitlistCandidatesHandler } from './application/handlers/find-waitlist-candidates.handler';
 
 const CommandHandlers = [
-    JoinWaitlistHandler,
-    OfferWaitlistSlotHandler,
-    AcceptWaitlistOfferHandler,
-    CancelWaitlistEntryHandler,
-    ExpireWaitlistOfferHandler,
+  JoinWaitlistHandler,
+  OfferWaitlistSlotHandler,
+  AcceptWaitlistOfferHandler,
+  CancelWaitlistEntryHandler,
+  ExpireWaitlistOfferHandler,
 ];
 
 const QueryHandlers = [
-    GetWaitlistEntryHandler,
-    ListWaitlistEntriesHandler,
-    FindWaitlistCandidatesHandler,
+  GetWaitlistEntryHandler,
+  ListWaitlistEntriesHandler,
+  FindWaitlistCandidatesHandler,
 ];
 
 @Module({
-    imports: [
-        CqrsModule,
-        TypeOrmModule.forFeature([WaitlistEntryOrmEntity]),
-    ],
-    controllers: [WaitlistController],
-    providers: [
-        ...CommandHandlers,
-        ...QueryHandlers,
+  imports: [CqrsModule, TypeOrmModule.forFeature([WaitlistEntryOrmEntity])],
+  controllers: [WaitlistController],
+  providers: [
+    ...CommandHandlers,
+    ...QueryHandlers,
 
-        {
-            provide: WAITLIST_ENTRY_REPOSITORY,
-            useClass: TypeOrmWaitlistEntryRepository,
-        },
+    {
+      provide: WAITLIST_ENTRY_REPOSITORY,
+      useClass: TypeOrmWaitlistEntryRepository,
+    },
 
-        /**
-         * Replace this with real adapter later:
-         * AvailabilityModule / AvailabilityCheckerPort
-         */
-        {
-            provide: WAITLIST_AVAILABILITY_CHECKER,
-            useClass: DevWaitlistAvailabilityCheckerAdapter,
-        },
+    /**
+     * Replace this with real adapter later:
+     * AvailabilityModule / AvailabilityCheckerPort
+     */
+    {
+      provide: WAITLIST_AVAILABILITY_CHECKER,
+      useClass: DevWaitlistAvailabilityCheckerAdapter,
+    },
 
-        /**
-         * Replace this with real adapter later:
-         * HoldModule / AppointmentHoldPort
-         */
-        {
-            provide: WAITLIST_APPOINTMENT_HOLD,
-            useClass: DevWaitlistAppointmentHoldAdapter,
-        },
-    ],
-    exports: [
-        WAITLIST_ENTRY_REPOSITORY,
-    ],
+    /**
+     * Replace this with real adapter later:
+     * HoldModule / AppointmentHoldPort
+     */
+    {
+      provide: WAITLIST_APPOINTMENT_HOLD,
+      useClass: DevWaitlistAppointmentHoldAdapter,
+    },
+  ],
+  exports: [WAITLIST_ENTRY_REPOSITORY],
 })
-export class WaitlistModule { }
+export class WaitlistModule {}

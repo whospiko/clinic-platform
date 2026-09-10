@@ -1,11 +1,11 @@
 import {
-    Body,
-    Controller,
-    Get,
-    Param,
-    Patch,
-    Post,
-    Query,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 
@@ -39,236 +39,227 @@ import { CheckDoctorAvailabilityQuery } from '../application/queries/check-docto
 
 @Controller()
 export class AppointmentController {
-    constructor(
-        private readonly commandBus: CommandBus,
-        private readonly queryBus: QueryBus,
-    ) { }
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
 
-    /**
-     * GET /appointments
-     *
-     * Examples:
-     * /appointments?page=1&limit=20
-     * /appointments?doctorId=xxx&from=2026-09-01T00:00:00.000Z&to=2026-09-02T00:00:00.000Z
-     * /appointments?patientId=xxx
-     * /appointments?status=CONFIRMED
-     */
-    @Get('appointments')
-    async list(
-        @Query() request: ListAppointmentsRequest,
-    ): Promise<PaginatedAppointmentResponseDto> {
-        return this.queryBus.execute(
-            new ListAppointmentsQuery({
-                page: request.page ?? 1,
-                limit: request.limit ?? 20,
-                patientId: request.patientId,
-                doctorId: request.doctorId,
-                treatmentId: request.treatmentId,
-                status: request.status,
-                source: request.source,
-                from: request.from ? new Date(request.from) : undefined,
-                to: request.to ? new Date(request.to) : undefined,
-                s: request.s,
-            }),
-        );
-    }
+  /**
+   * GET /appointments
+   *
+   * Examples:
+   * /appointments?page=1&limit=20
+   * /appointments?doctorId=xxx&from=2026-09-01T00:00:00.000Z&to=2026-09-02T00:00:00.000Z
+   * /appointments?patientId=xxx
+   * /appointments?status=CONFIRMED
+   */
+  @Get('appointments')
+  async list(
+    @Query() request: ListAppointmentsRequest,
+  ): Promise<PaginatedAppointmentResponseDto> {
+    return this.queryBus.execute(
+      new ListAppointmentsQuery({
+        page: request.page ?? 1,
+        limit: request.limit ?? 20,
+        patientId: request.patientId,
+        doctorId: request.doctorId,
+        treatmentId: request.treatmentId,
+        status: request.status,
+        source: request.source,
+        from: request.from ? new Date(request.from) : undefined,
+        to: request.to ? new Date(request.to) : undefined,
+        s: request.s,
+      }),
+    );
+  }
 
-    /**
-     * GET /appointments/availability/check
-     */
-    @Get('appointments/availability/check')
-    async checkAvailability(
-        @Query() request: CheckAvailabilityRequest,
-    ): Promise<AvailabilityResponseDto> {
-        return this.queryBus.execute(
-            new CheckDoctorAvailabilityQuery(
-                request.doctorId,
-                new Date(request.startAt),
-                new Date(request.endAt),
-                request.excludeAppointmentId,
-            ),
-        );
-    }
+  /**
+   * GET /appointments/availability/check
+   */
+  @Get('appointments/availability/check')
+  async checkAvailability(
+    @Query() request: CheckAvailabilityRequest,
+  ): Promise<AvailabilityResponseDto> {
+    return this.queryBus.execute(
+      new CheckDoctorAvailabilityQuery(
+        request.doctorId,
+        new Date(request.startAt),
+        new Date(request.endAt),
+        request.excludeAppointmentId,
+      ),
+    );
+  }
 
-    /**
-     * GET /appointments/no/:appointmentNo
-     *
-     * Important:
-     * Keep this before GET /appointments/:id,
-     * otherwise Nest may treat "no" as an id.
-     */
-    @Get('appointments/no/:appointmentNo')
-    async getByAppointmentNo(
-        @Param('appointmentNo') appointmentNo: string,
-    ): Promise<AppointmentResponseDto> {
-        return this.queryBus.execute(
-            new GetAppointmentByNoQuery(appointmentNo),
-        );
-    }
+  /**
+   * GET /appointments/no/:appointmentNo
+   *
+   * Important:
+   * Keep this before GET /appointments/:id,
+   * otherwise Nest may treat "no" as an id.
+   */
+  @Get('appointments/no/:appointmentNo')
+  async getByAppointmentNo(
+    @Param('appointmentNo') appointmentNo: string,
+  ): Promise<AppointmentResponseDto> {
+    return this.queryBus.execute(new GetAppointmentByNoQuery(appointmentNo));
+  }
 
-    /**
-     * GET /appointments/:id
-     */
-    @Get('appointments/:id')
-    async getById(
-        @Param('id') appointmentId: string,
-    ): Promise<AppointmentResponseDto> {
-        return this.queryBus.execute(
-            new GetAppointmentQuery(appointmentId),
-        );
-    }
+  /**
+   * GET /appointments/:id
+   */
+  @Get('appointments/:id')
+  async getById(
+    @Param('id') appointmentId: string,
+  ): Promise<AppointmentResponseDto> {
+    return this.queryBus.execute(new GetAppointmentQuery(appointmentId));
+  }
 
-    /**
-     * GET /appointments/:id/status-history
-     */
-    @Get('appointments/:id/status-history')
-    async getStatusHistory(
-        @Param('id') appointmentId: string,
-    ): Promise<AppointmentStatusHistoryResponseDto[]> {
-        return this.queryBus.execute(
-            new GetAppointmentHistoryQuery(appointmentId),
-        );
-    }
+  /**
+   * GET /appointments/:id/status-history
+   */
+  @Get('appointments/:id/status-history')
+  async getStatusHistory(
+    @Param('id') appointmentId: string,
+  ): Promise<AppointmentStatusHistoryResponseDto[]> {
+    return this.queryBus.execute(new GetAppointmentHistoryQuery(appointmentId));
+  }
 
-    /**
-     * GET /appointments/patients/:patientId
-     */
-    @Get('appointments/patients/:patientId')
-    async getPatientAppointments(
-        @Param('patientId') patientId: string,
-        @Query() request: ListAppointmentsRequest,
-    ): Promise<PaginatedAppointmentResponseDto> {
-        return this.queryBus.execute(
-            new ListAppointmentsQuery({
-                page: request.page ?? 1,
-                limit: request.limit ?? 20,
-                patientId,
-                status: request.status,
-                source: request.source,
-                from: request.from ? new Date(request.from) : undefined,
-                to: request.to ? new Date(request.to) : undefined,
-                s: request.s,
-            }),
-        );
-    }
+  /**
+   * GET /appointments/patients/:patientId
+   */
+  @Get('appointments/patients/:patientId')
+  async getPatientAppointments(
+    @Param('patientId') patientId: string,
+    @Query() request: ListAppointmentsRequest,
+  ): Promise<PaginatedAppointmentResponseDto> {
+    return this.queryBus.execute(
+      new ListAppointmentsQuery({
+        page: request.page ?? 1,
+        limit: request.limit ?? 20,
+        patientId,
+        status: request.status,
+        source: request.source,
+        from: request.from ? new Date(request.from) : undefined,
+        to: request.to ? new Date(request.to) : undefined,
+        s: request.s,
+      }),
+    );
+  }
 
-    /**
-     * GET /appointments/doctors/:doctorId/calendar
-     */
-    @Get('appointments/doctors/:doctorId/calendar')
-    async getDoctorCalendar(
-        @Param('doctorId') doctorId: string,
-        @Query() request: ListAppointmentsRequest,
-    ): Promise<PaginatedAppointmentResponseDto> {
-        return this.queryBus.execute(
-            new ListAppointmentsQuery({
-                page: request.page ?? 1,
-                limit: request.limit ?? 100,
-                doctorId,
-                status: request.status,
-                source: request.source,
-                from: request.from ? new Date(request.from) : undefined,
-                to: request.to ? new Date(request.to) : undefined,
-                s: request.s,
-            }),
-        );
-    }
+  /**
+   * GET /appointments/doctors/:doctorId/calendar
+   */
+  @Get('appointments/doctors/:doctorId/calendar')
+  async getDoctorCalendar(
+    @Param('doctorId') doctorId: string,
+    @Query() request: ListAppointmentsRequest,
+  ): Promise<PaginatedAppointmentResponseDto> {
+    return this.queryBus.execute(
+      new ListAppointmentsQuery({
+        page: request.page ?? 1,
+        limit: request.limit ?? 100,
+        doctorId,
+        status: request.status,
+        source: request.source,
+        from: request.from ? new Date(request.from) : undefined,
+        to: request.to ? new Date(request.to) : undefined,
+        s: request.s,
+      }),
+    );
+  }
 
-    /**
-     * GET /internal/appointments/doctors/:doctorId/busy-slots
-     *
-     * This is useful for schedule-service or doctor-service.
-     */
-    @Get('internal/appointments/doctors/:doctorId/busy-slots')
-    async getDoctorBusySlots(
-        @Param('doctorId') doctorId: string,
-        @Query() request: DoctorBusySlotsRequest,
-    ): Promise<BusySlotResponseDto[]> {
-        return this.queryBus.execute(
-            new GetDoctorBusySlotsQuery(
-                doctorId,
-                new Date(request.from),
-                new Date(request.to),
-            ),
-        );
-    }
+  /**
+   * GET /internal/appointments/doctors/:doctorId/busy-slots
+   *
+   * This is useful for schedule-service or doctor-service.
+   */
+  @Get('internal/appointments/doctors/:doctorId/busy-slots')
+  async getDoctorBusySlots(
+    @Param('doctorId') doctorId: string,
+    @Query() request: DoctorBusySlotsRequest,
+  ): Promise<BusySlotResponseDto[]> {
+    return this.queryBus.execute(
+      new GetDoctorBusySlotsQuery(
+        doctorId,
+        new Date(request.from),
+        new Date(request.to),
+      ),
+    );
+  }
 
-    /**
-     * POST /appointments
-     */
-    @Post('appointments')
-    async create(
-        @Body() request: CreateAppointmentRequest,
-    ): Promise<AppointmentResponseDto> {
-        return this.commandBus.execute(
-            new CreateAppointmentCommand(
-                request.patientId,
-                request.doctorId,
-                request.treatmentId ?? null,
-                new Date(request.startAt),
-                request.endAt ? new Date(request.endAt) : null,
-                request.source ?? AppointmentSource.Reception,
-                request.note ?? null,
-            ),
-        );
-    }
+  /**
+   * POST /appointments
+   */
+  @Post('appointments')
+  async create(
+    @Body() request: CreateAppointmentRequest,
+  ): Promise<AppointmentResponseDto> {
+    return this.commandBus.execute(
+      new CreateAppointmentCommand(
+        request.patientId,
+        request.doctorId,
+        request.treatmentId ?? null,
+        new Date(request.startAt),
+        request.endAt ? new Date(request.endAt) : null,
+        request.source ?? AppointmentSource.Reception,
+        request.note ?? null,
+      ),
+    );
+  }
 
-    /**
-     * PATCH /appointments/:id/confirm
-     */
-    @Patch('appointments/:id/confirm')
-    async confirm(
-        @Param('id') appointmentId: string,
-    ): Promise<AppointmentResponseDto> {
-        return this.commandBus.execute(
-            new ConfirmAppointmentCommand(appointmentId),
-        );
-    }
+  /**
+   * PATCH /appointments/:id/confirm
+   */
+  @Patch('appointments/:id/confirm')
+  async confirm(
+    @Param('id') appointmentId: string,
+  ): Promise<AppointmentResponseDto> {
+    return this.commandBus.execute(
+      new ConfirmAppointmentCommand(appointmentId),
+    );
+  }
 
-    /**
-     * PATCH /appointments/:id/cancel
-     */
-    @Patch('appointments/:id/cancel')
-    async cancel(
-        @Param('id') appointmentId: string,
-        @Body() request: CancelAppointmentRequest,
-    ): Promise<AppointmentResponseDto> {
-        return this.commandBus.execute(
-            new CancelAppointmentCommand(
-                appointmentId,
-                request.reason,
-            ),
-        );
-    }
+  /**
+   * PATCH /appointments/:id/cancel
+   */
+  @Patch('appointments/:id/cancel')
+  async cancel(
+    @Param('id') appointmentId: string,
+    @Body() request: CancelAppointmentRequest,
+  ): Promise<AppointmentResponseDto> {
+    return this.commandBus.execute(
+      new CancelAppointmentCommand(appointmentId, request.reason),
+    );
+  }
 
-    /**
-     * PATCH /appointments/:id/reschedule
-     */
-    @Patch('appointments/:id/reschedule')
-    async reschedule(
-        @Param('id') appointmentId: string,
-        @Body() request: RescheduleAppointmentRequest,
-    ): Promise<AppointmentResponseDto> {
-        return this.commandBus.execute(
-            new RescheduleAppointmentCommand(
-                appointmentId,
-                new Date(request.startAt),
-                request.endAt ? new Date(request.endAt) : null,
-                request.treatmentId ?? null,
-                request.note ?? null,
-            ),
-        );
-    }
+  /**
+   * PATCH /appointments/:id/reschedule
+   */
+  @Patch('appointments/:id/reschedule')
+  async reschedule(
+    @Param('id') appointmentId: string,
+    @Body() request: RescheduleAppointmentRequest,
+  ): Promise<AppointmentResponseDto> {
+    return this.commandBus.execute(
+      new RescheduleAppointmentCommand(
+        appointmentId,
+        new Date(request.startAt),
+        request.endAt ? new Date(request.endAt) : null,
+        request.treatmentId ?? null,
+        request.note ?? null,
+      ),
+    );
+  }
 
-    /**
-     * PATCH /appointments/:id/complete
-     */
-    @Patch('appointments/:id/complete')
-    async complete(
-        @Param('id') appointmentId: string,
-    ): Promise<AppointmentResponseDto> {
-        return this.commandBus.execute(
-            new CompleteAppointmentCommand(appointmentId),
-        );
-    }
+  /**
+   * PATCH /appointments/:id/complete
+   */
+  @Patch('appointments/:id/complete')
+  async complete(
+    @Param('id') appointmentId: string,
+  ): Promise<AppointmentResponseDto> {
+    return this.commandBus.execute(
+      new CompleteAppointmentCommand(appointmentId),
+    );
+  }
 }

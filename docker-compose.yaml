@@ -9,7 +9,7 @@ services:
       MYSQL_USER: clinic
       MYSQL_PASSWORD: clinic_password
     ports:
-      - "3306:3306"
+      - '3306:3306'
     volumes:
       - clinic_mysql_data:/var/lib/mysql
       - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql

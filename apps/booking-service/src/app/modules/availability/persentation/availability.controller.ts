@@ -9,23 +9,23 @@ import { AvailableSlotDto } from '../application/dto/available-slot.dto';
 @ApiTags('Availability')
 @Controller('availability')
 export class AvailabilityController {
-    constructor(private readonly queryBus: QueryBus) { }
+  constructor(private readonly queryBus: QueryBus) {}
 
-    @Get('slots')
-    @ApiOperation({
-        summary: 'Get available appointment slots for a doctor',
-    })
-    async getAvailableSlots(
-        @Query() request: GetAvailableSlotsRequest,
-    ): Promise<AvailableSlotDto[]> {
-        return this.queryBus.execute(
-            new GetAvailableSlotsQuery(
-                request.doctorId,
-                request.date,
-                request.durationMinutes,
-                request.slotStepMinutes,
-                request.treatmentId,
-            ),
-        );
-    }
+  @Get('slots')
+  @ApiOperation({
+    summary: 'Get available appointment slots for a doctor',
+  })
+  async getAvailableSlots(
+    @Query() request: GetAvailableSlotsRequest,
+  ): Promise<AvailableSlotDto[]> {
+    return this.queryBus.execute(
+      new GetAvailableSlotsQuery(
+        request.doctorId,
+        request.date,
+        request.durationMinutes,
+        request.slotStepMinutes,
+        request.treatmentId,
+      ),
+    );
+  }
 }

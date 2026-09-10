@@ -9,17 +9,18 @@ import { WaitlistEntryReadModel } from '../dto/waitlist-entry-read-model';
 @QueryHandler(ListWaitlistEntriesQuery)
 @Injectable()
 export class ListWaitlistEntriesHandler
-    implements IQueryHandler<ListWaitlistEntriesQuery, WaitlistEntryReadModel[]> {
-    constructor(
-        @Inject(WAITLIST_ENTRY_REPOSITORY)
-        private readonly repository: WaitlistEntryRepository,
-    ) { }
+  implements IQueryHandler<ListWaitlistEntriesQuery, WaitlistEntryReadModel[]>
+{
+  constructor(
+    @Inject(WAITLIST_ENTRY_REPOSITORY)
+    private readonly repository: WaitlistEntryRepository,
+  ) {}
 
-    async execute(
-        query: ListWaitlistEntriesQuery,
-    ): Promise<WaitlistEntryReadModel[]> {
-        const entries = await this.repository.findMany(query.filter);
+  async execute(
+    query: ListWaitlistEntriesQuery,
+  ): Promise<WaitlistEntryReadModel[]> {
+    const entries = await this.repository.findMany(query.filter);
 
-        return entries.map((entry) => entry.toSnapshot());
-    }
+    return entries.map((entry) => entry.toSnapshot());
+  }
 }

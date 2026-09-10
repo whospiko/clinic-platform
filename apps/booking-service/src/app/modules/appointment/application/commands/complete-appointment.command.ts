@@ -1,5 +1,3 @@
 export class CompleteAppointmentCommand {
-    constructor(
-        public readonly appointmentId: string,
-    ) { }
+  constructor(public readonly appointmentId: string) {}
 }

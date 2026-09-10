@@ -5,11 +5,11 @@ You create the weekly schedule one time, then the system automatically uses it f
 Example: you create this once:
 
 Doctor A
-Monday    08:00 - 12:00
-Monday    14:00 - 17:00
-Tuesday   08:00 - 12:00
+Monday 08:00 - 12:00
+Monday 14:00 - 17:00
+Tuesday 08:00 - 12:00
 Wednesday 08:00 - 12:00
-Friday    08:00 - 12:00
+Friday 08:00 - 12:00
 
 Then it automatically applies to:
 

@@ -18,9 +18,7 @@ import { WaitlistEntryOrmEntity } from '../../modules/waitlist/infrastructure/pe
     {
       provide: DataSource,
       inject: [ConfigService],
-      useFactory: async (
-        configService: ConfigService,
-      ): Promise<DataSource> => {
+      useFactory: async (configService: ConfigService): Promise<DataSource> => {
         const dataSource = new DataSource({
           type: 'mysql',
 
@@ -41,7 +39,7 @@ import { WaitlistEntryOrmEntity } from '../../modules/waitlist/infrastructure/pe
             ScheduleOverrideOrmEntity,
             DentalChairOrmEntity,
             AppointmentHoldOrmEntity,
-            WaitlistEntryOrmEntity
+            WaitlistEntryOrmEntity,
           ],
         });
 

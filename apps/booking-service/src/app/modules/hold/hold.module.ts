@@ -17,32 +17,32 @@ import { APPOINTMENT_HOLD_REPOSITORY } from './application/ports/appointment-hol
 import { HOLD_BLOCK_READER } from './application/ports/hold-block-reader.port';
 
 const CommandHandlers = [
-    CreateAppointmentHoldHandler,
-    ConfirmAppointmentHoldHandler,
-    CancelAppointmentHoldHandler,
-    ExpireAppointmentHoldHandler,
+  CreateAppointmentHoldHandler,
+  ConfirmAppointmentHoldHandler,
+  CancelAppointmentHoldHandler,
+  ExpireAppointmentHoldHandler,
 ];
 
 @Module({
-    imports: [CqrsModule, TypeOrmModule.forFeature([AppointmentHoldOrmEntity])],
-    controllers: [AppointmentHoldController],
-    providers: [
-        ...CommandHandlers,
-        {
-            provide: APPOINTMENT_HOLD_REPOSITORY,
-            useClass: TypeOrmAppointmentHoldRepository,
-        },
-        {
-            provide: HOLD_BLOCK_READER,
-            useClass: TypeOrmHoldBlockReader,
-        },
-    ],
-    exports: [
-        /**
-         * Export only reader port for loose coupling.
-         * Availability module can inject HOLD_BLOCK_READER.
-         */
-        HOLD_BLOCK_READER,
-    ],
+  imports: [CqrsModule, TypeOrmModule.forFeature([AppointmentHoldOrmEntity])],
+  controllers: [AppointmentHoldController],
+  providers: [
+    ...CommandHandlers,
+    {
+      provide: APPOINTMENT_HOLD_REPOSITORY,
+      useClass: TypeOrmAppointmentHoldRepository,
+    },
+    {
+      provide: HOLD_BLOCK_READER,
+      useClass: TypeOrmHoldBlockReader,
+    },
+  ],
+  exports: [
+    /**
+     * Export only reader port for loose coupling.
+     * Availability module can inject HOLD_BLOCK_READER.
+     */
+    HOLD_BLOCK_READER,
+  ],
 })
-export class HoldModule { }
+export class HoldModule {}

@@ -9,26 +9,27 @@ import { ScheduleMapper } from './schedule.mapper';
 
 @Injectable()
 export class TypeOrmScheduleOverrideRepository
-    implements ScheduleOverrideRepository {
-    constructor(
-        @InjectRepository(ScheduleOverrideOrmEntity)
-        private readonly repository: Repository<ScheduleOverrideOrmEntity>,
-    ) { }
+  implements ScheduleOverrideRepository
+{
+  constructor(
+    @InjectRepository(ScheduleOverrideOrmEntity)
+    private readonly repository: Repository<ScheduleOverrideOrmEntity>,
+  ) {}
 
-    async save(override: DoctorScheduleOverride): Promise<void> {
-        const entity = ScheduleMapper.toPersistenceOverride(override);
-        await this.repository.save(entity);
-    }
+  async save(override: DoctorScheduleOverride): Promise<void> {
+    const entity = ScheduleMapper.toPersistenceOverride(override);
+    await this.repository.save(entity);
+  }
 
-    async findById(id: string): Promise<DoctorScheduleOverride | null> {
-        const entity = await this.repository.findOne({
-            where: { id },
-        });
+  async findById(id: string): Promise<DoctorScheduleOverride | null> {
+    const entity = await this.repository.findOne({
+      where: { id },
+    });
 
-        return entity ? ScheduleMapper.toDomainOverride(entity) : null;
-    }
+    return entity ? ScheduleMapper.toDomainOverride(entity) : null;
+  }
 
-    async delete(id: string): Promise<void> {
-        await this.repository.delete({ id });
-    }
+  async delete(id: string): Promise<void> {
+    await this.repository.delete({ id });
+  }
 }

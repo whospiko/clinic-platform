@@ -9,46 +9,47 @@ import { ScheduleMapper } from './schedule.mapper';
 
 @Injectable()
 export class TypeOrmScheduleTemplateRepository
-    implements ScheduleTemplateRepository {
-    constructor(
-        @InjectRepository(ScheduleTemplateOrmEntity)
-        private readonly repository: Repository<ScheduleTemplateOrmEntity>,
-    ) { }
+  implements ScheduleTemplateRepository
+{
+  constructor(
+    @InjectRepository(ScheduleTemplateOrmEntity)
+    private readonly repository: Repository<ScheduleTemplateOrmEntity>,
+  ) {}
 
-    async save(template: DoctorScheduleTemplate): Promise<void> {
-        const entity = ScheduleMapper.toPersistenceTemplate(template);
-        await this.repository.save(entity);
-    }
+  async save(template: DoctorScheduleTemplate): Promise<void> {
+    const entity = ScheduleMapper.toPersistenceTemplate(template);
+    await this.repository.save(entity);
+  }
 
-    async findById(id: string): Promise<DoctorScheduleTemplate | null> {
-        const entity = await this.repository.findOne({
-            where: { id },
-            relations: {
-                workingWindows: true,
-                breakTimes: true,
-            },
-        });
+  async findById(id: string): Promise<DoctorScheduleTemplate | null> {
+    const entity = await this.repository.findOne({
+      where: { id },
+      relations: {
+        workingWindows: true,
+        breakTimes: true,
+      },
+    });
 
-        return entity ? ScheduleMapper.toDomainTemplate(entity) : null;
-    }
+    return entity ? ScheduleMapper.toDomainTemplate(entity) : null;
+  }
 
-    async findActiveByDoctorId(
-        doctorId: string,
-    ): Promise<DoctorScheduleTemplate | null> {
-        const entity = await this.repository.findOne({
-            where: {
-                doctorId,
-                isActive: true,
-            },
-            order: {
-                effectiveFrom: 'DESC',
-            },
-            relations: {
-                workingWindows: true,
-                breakTimes: true,
-            },
-        });
+  async findActiveByDoctorId(
+    doctorId: string,
+  ): Promise<DoctorScheduleTemplate | null> {
+    const entity = await this.repository.findOne({
+      where: {
+        doctorId,
+        isActive: true,
+      },
+      order: {
+        effectiveFrom: 'DESC',
+      },
+      relations: {
+        workingWindows: true,
+        breakTimes: true,
+      },
+    });
 
-        return entity ? ScheduleMapper.toDomainTemplate(entity) : null;
-    }
+    return entity ? ScheduleMapper.toDomainTemplate(entity) : null;
+  }
 }

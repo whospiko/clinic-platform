@@ -1,3 +1,3 @@
 export class AvailabilityResponseDto {
-    available: boolean;
+  available: boolean;
 }

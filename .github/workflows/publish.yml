@@ -11,7 +11,6 @@ permissions:
   packages: write
 
 jobs:
-
   # ==================================================
   # 1. Verify
   # ==================================================
@@ -94,7 +93,6 @@ jobs:
           echo "Affected apps: $APPS"
 
           echo "apps=$APPS" >> "$GITHUB_OUTPUT"
-
 
   # ==================================================
   # 3. Docker build / GHCR push

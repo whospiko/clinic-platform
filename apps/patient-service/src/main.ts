@@ -1,40 +1,35 @@
-import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app/app.module';
-import { setupServiceApp } from '@clinic/common'
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
-async function bootstrap() {
+import { setupServiceApp } from '@clinic/common';
+import { AppModule } from './app/app.module';
+
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
-  
+  const config = app.get(ConfigService);
+
+  app.enableCors({
+    origin: config.get<string>('CORS_ORIGIN', '*'),
+    credentials: true,
+  });
+
   setupServiceApp(app, {
     serviceName: 'patient-service',
     title: 'Patient Service API',
-    description: 'Internal API for managing clinic patient data',
+    description: 'Internal API for clinic patient records',
     version: '1.0.0',
     swaggerPath: 'docs',
-    globalPrefix: 'api'
+    globalPrefix: 'api',
   });
 
-  const httpPort = Number(process.env.PORT || 3002);
-  const tcpHost = process.env.TCP_HOST || '127.0.0.1';
-  const tcpPort = Number(process.env.TCP_PORT || 4002);
+  const port = Number(config.get<string>('PORT') ?? 3002);
+  await app.listen(port, '0.0.0.0');
 
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.TCP,
-    options: {
-      host: tcpHost,
-      port: tcpPort,
-    },
-  });
-
-  await app.startAllMicroservices();
-  await app.listen(httpPort);
-
-  Logger.log(`Patient HTTP running on http://localhost:${httpPort}`);
-  Logger.log(`Patient Swagger running on http://localhost:${httpPort}/docs`);
-  Logger.log(`Patient TCP microservice running on ${tcpHost}:${tcpPort}`);
-
+  console.log(`Patient Service API running on http://localhost:${port}/api`);
+  console.log(`Patient Swagger docs running on http://localhost:${port}/docs`);
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

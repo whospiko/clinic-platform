@@ -4,11 +4,11 @@ import { DoctorScheduleOverrideReadModel } from '../dto/doctor-schedule-override
 export const SCHEDULE_READER_PORT = 'SCHEDULE_READER_PORT';
 
 export interface ScheduleReaderPort {
-    getDoctorSchedule(doctorId: string): Promise<DoctorScheduleReadModel | null>;
+  getDoctorSchedule(doctorId: string): Promise<DoctorScheduleReadModel | null>;
 
-    getDoctorOverrides(
-        doctorId: string,
-        from?: string,
-        to?: string,
-    ): Promise<DoctorScheduleOverrideReadModel[]>;
+  getDoctorOverrides(
+    doctorId: string,
+    from?: string,
+    to?: string,
+  ): Promise<DoctorScheduleOverrideReadModel[]>;
 }

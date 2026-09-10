@@ -1,5 +1,3 @@
 export class GetAppointmentQuery {
-    constructor(
-        public readonly appointmentId: string,
-    ) { }
+  constructor(public readonly appointmentId: string) {}
 }

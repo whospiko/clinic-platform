@@ -1,8 +1,8 @@
 export class CancelWaitlistEntryCommand {
-    constructor(
-        public readonly payload: {
-            waitlistEntryId: string;
-            reason?: string | null;
-        },
-    ) { }
+  constructor(
+    public readonly payload: {
+      waitlistEntryId: string;
+      reason?: string | null;
+    },
+  ) {}
 }

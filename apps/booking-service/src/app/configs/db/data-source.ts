@@ -3,23 +3,21 @@ import { DataSource } from 'typeorm';
 import * as path from 'node:path';
 import { bookingMigrations } from './migrations';
 
-
 const isTsRuntime = __filename.endsWith('.ts');
 
 const entitiesGlob = isTsRuntime
   ? path.join(
-    process.cwd(),
-    'apps/booking-service/src/app/modules/**/infrastructure/persistence/*.entity.ts',
-  )
+      process.cwd(),
+      'apps/booking-service/src/app/modules/**/infrastructure/persistence/*.entity.ts',
+    )
   : path.join(
-    __dirname,
-    '../../modules/**/infrastructure/persistence/*.entity.js',
-  );
+      __dirname,
+      '../../modules/**/infrastructure/persistence/*.entity.js',
+    );
 
 const migrationsGlob = isTsRuntime
   ? path.join(__dirname, 'migrations/*.ts')
   : path.join(__dirname, 'migrations/*.js');
-
 
 export default new DataSource({
   type: 'mysql',

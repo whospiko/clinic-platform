@@ -22,6 +22,25 @@
         }
       }
     },
+    "build-migrate": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/patient-service-migrate",
+        "format": ["cjs"],
+        "bundle": true,
+        "main": "apps/patient-service/src/migrate.ts",
+        "tsConfig": "apps/patient-service/tsconfig.app.json",
+        "outputFileName": "migrate.js",
+        "generatePackageJson": false,
+        "external": [
+          "@nestjs/microservices",
+          "@nestjs/websockets",
+          "class-transformer/storage"
+        ]
+      }
+    },
     "prune-lockfile": {
       "dependsOn": ["build"],
       "cache": true,
@@ -64,6 +83,50 @@
         },
         "production": {
           "buildTarget": "patient-service:build:production"
+        }
+      }
+    },
+    "migration-run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d apps/patient-service/src/app/configs/db/data-source.ts",
+        "cwd": ".",
+        "env": {
+          "TS_NODE_PROJECT": "apps/patient-service/tsconfig.app.json",
+          "TS_NODE_COMPILER_OPTIONS": "{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}"
+        }
+      }
+    },
+    "migration-revert": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d apps/patient-service/src/app/configs/db/data-source.ts",
+        "cwd": ".",
+        "env": {
+          "TS_NODE_PROJECT": "apps/patient-service/tsconfig.app.json",
+          "TS_NODE_COMPILER_OPTIONS": "{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}"
+        }
+      }
+    },
+    "migration-show": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:show -d apps/patient-service/src/app/configs/db/data-source.ts",
+        "cwd": ".",
+        "env": {
+          "TS_NODE_PROJECT": "apps/patient-service/tsconfig.app.json",
+          "TS_NODE_COMPILER_OPTIONS": "{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}"
+        }
+      }
+    },
+    "migration-generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate apps/patient-service/src/app/configs/db/migrations/auto-migration -d apps/patient-service/src/app/configs/db/data-source.ts",
+        "cwd": ".",
+        "env": {
+          "TS_NODE_PROJECT": "apps/patient-service/tsconfig.app.json",
+          "TS_NODE_COMPILER_OPTIONS": "{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}"
         }
       }
     }

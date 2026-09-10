@@ -1,6 +1,6 @@
 export class AvailableSlotDto {
-    doctorId!: string;
-    startAt!: string;
-    endAt!: string;
-    durationMinutes!: number;
+  doctorId!: string;
+  startAt!: string;
+  endAt!: string;
+  durationMinutes!: number;
 }

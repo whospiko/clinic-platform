@@ -16,28 +16,25 @@ import { TypeOrmResourceReader } from './infrastructure/persistence/typeorm-reso
 import { DentalChairController } from './presentation/dental-chair.controller';
 
 const commandHandlers = [
-    CreateDentalChairHandler,
-    UpdateDentalChairHandler,
-    ChangeDentalChairStatusHandler,
+  CreateDentalChairHandler,
+  UpdateDentalChairHandler,
+  ChangeDentalChairStatusHandler,
 ];
 
 @Module({
-    imports: [
-        CqrsModule,
-        TypeOrmModule.forFeature([DentalChairOrmEntity]),
-    ],
-    controllers: [DentalChairController],
-    providers: [
-        ...commandHandlers,
-        {
-            provide: DentalChairRepository,
-            useClass: TypeOrmDentalChairRepository,
-        },
-        {
-            provide: ResourceReaderPort,
-            useClass: TypeOrmResourceReader,
-        },
-    ],
-    exports: [ResourceReaderPort],
+  imports: [CqrsModule, TypeOrmModule.forFeature([DentalChairOrmEntity])],
+  controllers: [DentalChairController],
+  providers: [
+    ...commandHandlers,
+    {
+      provide: DentalChairRepository,
+      useClass: TypeOrmDentalChairRepository,
+    },
+    {
+      provide: ResourceReaderPort,
+      useClass: TypeOrmResourceReader,
+    },
+  ],
+  exports: [ResourceReaderPort],
 })
-export class ResourceModule { }
+export class ResourceModule {}

@@ -1,0 +1,2 @@
+export const PATIENT_REPOSITORY = Symbol('PATIENT_REPOSITORY');
+export const PATIENT_READER = Symbol('PATIENT_READER');

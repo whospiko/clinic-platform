@@ -3,12 +3,22 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "format": "prettier --write .",
     "dev:booking": "nx serve booking-service",
     "dev:patient": "nx serve patient-service",
+    "dev:doctor": "nx serve doctor-service",
     "migrate:booking": "nx run booking-service:migration-run",
     "migrate:booking:show": "nx run booking-service:migration-show",
     "migrate:booking:revert": "nx run booking-service:migration-revert",
-    "migrate:booking:generate": "nx run booking-service:migration-generate"
+    "migrate:booking:generate": "nx run booking-service:migration-generate",
+    "migrate:patient": "nx run patient-service:migration-run",
+    "migrate:patient:show": "nx run patient-service:migration-show",
+    "migrate:patient:revert": "nx run patient-service:migration-revert",
+    "migrate:patient:generate": "nx run patient-service:migration-generate",
+    "migrate:doctor": "nx run doctor-service:migration-run",
+    "migrate:doctor:show": "nx run doctor-service:migration-show",
+    "migrate:doctor:revert": "nx run doctor-service:migration-revert",
+    "migrate:doctor:generate": "nx run doctor-service:migration-generate"
   },
   "private": true,
   "dependencies": {
@@ -36,7 +46,7 @@
     "@nx/eslint": "23.1.2",
     "@nx/eslint-plugin": "23.1.2",
     "@nx/js": "23.1.2",
-    "@nx/nest": "^23.1.2",
+    "@nx/nest": "23.1.2",
     "@nx/node": "23.1.2",
     "@nx/web": "23.1.2",
     "@nx/webpack": "23.1.2",

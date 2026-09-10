@@ -29,7 +29,7 @@
         "@nx/eslint": "23.1.2",
         "@nx/eslint-plugin": "23.1.2",
         "@nx/js": "23.1.2",
-        "@nx/nest": "^23.1.2",
+        "@nx/nest": "23.1.2",
         "@nx/node": "23.1.2",
         "@nx/web": "23.1.2",
         "@nx/webpack": "23.1.2",

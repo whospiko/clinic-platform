@@ -4,54 +4,53 @@ import { GlobalExceptionFilter } from '../errors/global-exception.filter';
 import { ResponseInterceptor } from '../api/response.interceptor';
 
 export type SetupServiceAppOptions = {
-    serviceName: string;
-    title: string;
-    description: string;
-    version?: string;
-    swaggerPath?: string;
-    globalPrefix?: string
+  serviceName: string;
+  title: string;
+  description: string;
+  version?: string;
+  swaggerPath?: string;
+  globalPrefix?: string;
 };
 
 export function setupServiceApp(
-    app: INestApplication,
-    options: SetupServiceAppOptions,
+  app: INestApplication,
+  options: SetupServiceAppOptions,
 ): void {
+  const globalPrefix = options.globalPrefix;
 
-    const globalPrefix = options.globalPrefix;
+  if (globalPrefix) {
+    app.setGlobalPrefix(globalPrefix);
+  }
 
-    if (globalPrefix) {
-        app.setGlobalPrefix(globalPrefix);
-    }
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
 
-    app.useGlobalPipes(
-        new ValidationPipe({
-            whitelist: true,
-            transform: true,
-        }),
-    );
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
-    app.useGlobalFilters(new GlobalExceptionFilter());
-    
-    app.useGlobalInterceptors(new ResponseInterceptor());
+  app.useGlobalInterceptors(new ResponseInterceptor());
 
-    const swaggerPath = options.swaggerPath ?? 'docs';
+  const swaggerPath = options.swaggerPath ?? 'docs';
 
-    const swaggerConfig = new DocumentBuilder()
-        .setTitle(options.title)
-        .setDescription(options.description)
-        .setVersion(options.version ?? '1.0.0')
-        .addTag(options.serviceName)
-        .build();
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle(options.title)
+    .setDescription(options.description)
+    .setVersion(options.version ?? '1.0.0')
+    .addTag(options.serviceName)
+    .build();
 
-    const document = SwaggerModule.createDocument(app, swaggerConfig);
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
 
-    SwaggerModule.setup(swaggerPath, app, document, {
-        swaggerOptions: {
-            persistAuthorization: true,
-        },
-    });
+  SwaggerModule.setup(swaggerPath, app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
 
-    Logger.log(
-        `${options.serviceName} Swagger docs available at /${swaggerPath}`,
-    );
+  Logger.log(
+    `${options.serviceName} Swagger docs available at /${swaggerPath}`,
+  );
 }

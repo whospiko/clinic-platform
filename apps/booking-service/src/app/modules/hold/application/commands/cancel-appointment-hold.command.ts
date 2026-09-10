@@ -1,3 +1,3 @@
 export class CancelAppointmentHoldCommand {
-    constructor(public readonly holdId: string) { }
+  constructor(public readonly holdId: string) {}
 }

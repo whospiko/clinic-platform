@@ -1,9 +1,9 @@
 1. Patient opens available slots
    availability module checks:
    schedule rules
-   + appointment blocks
-   + active hold blocks
-   + resource blocks
+   - appointment blocks
+   - active hold blocks
+   - resource blocks
 
 2. Patient selects slot
    POST /api/appointment-holds

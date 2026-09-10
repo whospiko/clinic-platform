@@ -20,10 +20,10 @@ import { WaitlistModule } from './modules/waitlist/waitlist.module';
     ResourceModule,
     HoldModule,
     WaitlistModule,
-    DatabaseModule
+    DatabaseModule,
   ],
   controllers: [],
   providers: [],
-  exports: []
+  exports: [],
 })
 export class AppModule {}

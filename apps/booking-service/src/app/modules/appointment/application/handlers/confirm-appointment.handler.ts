@@ -5,33 +5,38 @@ import { ConfirmAppointmentCommand } from '../commands/confirm-appointment.comma
 import { AppointmentResponseDto } from '../dto/appointment-response.dto';
 
 import {
-    APPOINTMENT_REPOSITORY,
-    AppointmentRepository,
+  APPOINTMENT_REPOSITORY,
+  AppointmentRepository,
 } from '../ports/appointment.repository';
 
 @CommandHandler(ConfirmAppointmentCommand)
 export class ConfirmAppointmentHandler
-    implements ICommandHandler<ConfirmAppointmentCommand, AppointmentResponseDto> {
-    constructor(
-        @Inject(APPOINTMENT_REPOSITORY)
-        private readonly appointmentRepository: AppointmentRepository,
-    ) { }
+  implements ICommandHandler<ConfirmAppointmentCommand, AppointmentResponseDto>
+{
+  constructor(
+    @Inject(APPOINTMENT_REPOSITORY)
+    private readonly appointmentRepository: AppointmentRepository,
+  ) {}
 
-    async execute(command: ConfirmAppointmentCommand): Promise<AppointmentResponseDto> {
-        const appointment = await this.appointmentRepository.findById(command.appointmentId);
+  async execute(
+    command: ConfirmAppointmentCommand,
+  ): Promise<AppointmentResponseDto> {
+    const appointment = await this.appointmentRepository.findById(
+      command.appointmentId,
+    );
 
-        if (!appointment) {
-            throw new NotFoundException('Appointment not found.');
-        }
-
-        try {
-            appointment.confirm();
-        } catch (error) {
-            throw new BadRequestException((error as Error).message);
-        }
-
-        await this.appointmentRepository.save(appointment);
-
-        return AppointmentResponseDto.fromDomain(appointment);
+    if (!appointment) {
+      throw new NotFoundException('Appointment not found.');
     }
+
+    try {
+      appointment.confirm();
+    } catch (error) {
+      throw new BadRequestException((error as Error).message);
+    }
+
+    await this.appointmentRepository.save(appointment);
+
+    return AppointmentResponseDto.fromDomain(appointment);
+  }
 }

@@ -10,9 +10,10 @@ application/services
 That service should combine:
 
 weekly template
-+ break times
-+ schedule overrides
-+ existing appointments
-= available appointment slots
+
+- break times
+- schedule overrides
+- existing appointments
+  = available appointment slots
 
 That is the correct place to calculate real appointment availability.

@@ -1,5 +1,3 @@
 export class GetAppointmentByNoQuery {
-    constructor(
-        public readonly appointmentNo: string,
-    ) { }
+  constructor(public readonly appointmentNo: string) {}
 }
